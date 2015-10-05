@@ -13,32 +13,15 @@ package org.projectbuendia.client.ui.sync;
 
 import android.support.test.espresso.Espresso;
 
-import com.google.common.base.Optional;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.projectbuendia.client.R;
 import org.projectbuendia.client.events.FetchXformSucceededEvent;
 import org.projectbuendia.client.models.Patient;
-import org.projectbuendia.client.models.PatientDelta;
-import org.projectbuendia.client.json.JsonPatient;
 
 import java.util.UUID;
 
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.is;
 
-
-import static android.support.test.espresso.web.assertion.WebViewAssertions.webMatches;
-import static android.support.test.espresso.web.sugar.Web.onWebView;
-import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
-import static android.support.test.espresso.web.webdriver.DriverAtoms.getText;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
-
-import static java.lang.String.format;
 
 /** Tests the loading of the encounter xform from the patient chart activity. */
 public class PatientChartActivityXformSyncTest extends SyncTestCase {
@@ -48,11 +31,6 @@ public class PatientChartActivityXformSyncTest extends SyncTestCase {
     @Override public void setUp() throws Exception {
         super.setUp();
         click(viewWithText("Guest User"));
-    }
-
-
-    public PatientChartActivityXformSyncTest() {
-        super();
     }
 
     /**
