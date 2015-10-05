@@ -28,12 +28,31 @@ import java.util.UUID;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.is;
 
+
+import static android.support.test.espresso.web.assertion.WebViewAssertions.webMatches;
+import static android.support.test.espresso.web.sugar.Web.onWebView;
+import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
+import static android.support.test.espresso.web.webdriver.DriverAtoms.getText;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
+
+import static java.lang.String.format;
+
 /** Tests the loading of the encounter xform from the patient chart activity. */
 public class PatientChartActivityXformSyncTest extends SyncTestCase {
+
+    private static final String FORM_LABEL = "[test] Form";
+
     @Override public void setUp() throws Exception {
         super.setUp();
-
         click(viewWithText("Guest User"));
+    }
+
+
+    public PatientChartActivityXformSyncTest() {
+        super();
     }
 
     /**
@@ -41,40 +60,39 @@ public class PatientChartActivityXformSyncTest extends SyncTestCase {
      * eventually load.
      */
     public void testXformRetrievedFromServer() {
+
         loadChart();
-        screenshot("Patient Chart");
+        openEncounterForm();
+
+    }
+
+    private void openEncounterForm() {
+
+        openActionBarOptionsMenu();
+
         EventBusIdlingResource<FetchXformSucceededEvent> xformIdlingResource =
-            new EventBusIdlingResource<FetchXformSucceededEvent>(
-                UUID.randomUUID().toString(),
-                mEventBus);
-        click(viewWithId(R.id.action_update_chart));
+                new EventBusIdlingResource<FetchXformSucceededEvent>(
+                        UUID.randomUUID().toString(), mEventBus);
+        click(viewWithText(FORM_LABEL));
         Espresso.registerIdlingResources(xformIdlingResource);
-        // This check is known to be particularly flaky.
-        expectVisibleWithin(45000, viewWithText("Encounter"));
-        screenshot("Xform Loaded");
-        click(viewWithText(R.string.form_entry_discard));
+
+        expectVisibleSoon(viewWithText("Encounter"));
+        click(viewWithText("Discard"));
     }
 
     private void loadChart() {
+
         waitForProgressFragment();
         // Open patient list.
         click(viewWithId(R.id.action_search));
         // waitForProgressFragment() doesn't quite work here as we're actually waiting on the
         // search button in the action bar to finish its loading task.
-        expectVisibleSoon(viewThat(hasTextContaining("Triage (")));
+        expectVisibleSoon(viewThat(hasTextContaining("Triage")));
         // Click first patient.
         click(dataThat(is(Patient.class))
-            .inAdapterView(withId(R.id.fragment_patient_list))
-            .atPosition(0));
+                .inAdapterView(withId(R.id.fragment_patient_list))
+                .atPosition(0));
+
     }
 
-    private PatientDelta getBasicDemoPatient() {
-        PatientDelta newPatient = new PatientDelta();
-        newPatient.familyName = Optional.of("XformSyncTest");
-        newPatient.givenName = Optional.of("TestPatientFor");
-        newPatient.gender = Optional.of(JsonPatient.GENDER_FEMALE);
-        newPatient.id = Optional.of(UUID.randomUUID().toString().substring(30));
-        newPatient.birthdate = Optional.of(LocalDate.now().minusYears(12).minusMonths(3));
-        return newPatient;
-    }
 }
