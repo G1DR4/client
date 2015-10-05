@@ -11,6 +11,7 @@
 
 package org.projectbuendia.client.ui.sync;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 
 import org.projectbuendia.client.R;
@@ -41,12 +42,12 @@ public class PatientChartActivityXformSyncTest extends SyncTestCase {
 
         loadChart();
         openEncounterForm();
-
+        click(viewWithText("Discard"));
     }
 
     private void openEncounterForm() {
 
-        openActionBarOptionsMenu();
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext());
 
         EventBusIdlingResource<FetchXformSucceededEvent> xformIdlingResource =
                 new EventBusIdlingResource<FetchXformSucceededEvent>(
@@ -55,7 +56,6 @@ public class PatientChartActivityXformSyncTest extends SyncTestCase {
         Espresso.registerIdlingResources(xformIdlingResource);
 
         expectVisibleSoon(viewWithText("Encounter"));
-        click(viewWithText("Discard"));
     }
 
     private void loadChart() {
